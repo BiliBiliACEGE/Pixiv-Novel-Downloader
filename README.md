@@ -29,8 +29,7 @@ python main.py
 
 ## 截图
 
-![界面截图](https://github.com/user-attachments/assets/f79ec8f0-3771-4766-b6b8-9591cf16e00d)
-
+![界面截图](screenshot.png)
 
 ## 许可证
 
