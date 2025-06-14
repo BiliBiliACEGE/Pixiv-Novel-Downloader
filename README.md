@@ -40,6 +40,7 @@ python main.py
 
 ![记录](https://github.com/user-attachments/assets/57ed96a6-5891-49a3-ba9b-6b0b14b178dc)
 
+![设置](https://github.com/user-attachments/assets/83f262f0-7559-448c-a321-67927431a44c)
 
 
 ## 许可证

@@ -600,6 +600,27 @@ class PixivNovelDownloader(QMainWindow):
         logging.warning(error_msg)
         raise ValueError(error_msg)
 
+    def open_folder(self,file_path,open_folder=True):
+       # 如果设置了下载后打开文件夹 且 open_folder=True
+            if self.open_after_download and open_folder:
+                try:
+                    # 打开文件所在目录
+                    if sys.platform == "win32":
+                        os.startfile(os.path.dirname(file_path))
+                    elif sys.platform == "darwin":
+                        subprocess.Popen(["open", os.path.dirname(file_path)])
+                    else:
+                        subprocess.Popen(["xdg-open", os.path.dirname(file_path)])
+                    logging.info(f"已打开文件夹: {os.path.dirname(file_path)}")
+                except Exception as e:
+                    logging.error(f"打开文件夹失败: {str(e)}")
+            else:
+                # 仅打印路径
+                logging.info(f"下载完成: 路径 '{file_path}'")
+            #如果是批量下载或系列下载就等待全部完成后打开
+            if self.batch_download or self.download_series:
+                self.open_after_download=True
+
     def download_novel(self, novel_id=None):
         """下载单本小说或系列"""
         try:
@@ -766,25 +787,7 @@ class PixivNovelDownloader(QMainWindow):
             self.progress_label.setText(self._("status_completed"))
             self.progress_info.setText(self._("completed", title=novel_title))
             self.save_download_history(novel_title)
-            
-            # 如果设置了下载后打开文件夹
-            if self.open_after_download:
-                try:
-                    # 打开文件所在目录
-                    if sys.platform == "win32":
-                        os.startfile(os.path.dirname(file_path))
-                    elif sys.platform == "darwin":
-                        subprocess.Popen(["open", os.path.dirname(file_path)])
-                    else:
-                        subprocess.Popen(["xdg-open", os.path.dirname(file_path)])
-                    logging.info(f"已打开文件夹: {os.path.dirname(file_path)}")
-                except Exception as e:
-                    logging.error(f"打开文件夹失败: {str(e)}")
-            
-            # 显示成功消息并返回主页
-            QMessageBox.information(self, self._("download_success", title=novel_title), 
-                                   self._("download_success", title=novel_title))
-            self.switch_tab(0)
+            self.open_folder(file_path,open_folder=True)
             
         except Exception as e:
             error_msg = f"{self._('download_failed')}: {str(e)}"
@@ -793,7 +796,11 @@ class PixivNovelDownloader(QMainWindow):
             self.progress.setValue(0)
             self.progress_label.setText(self._("status_error"))
             self.progress_info.setText(f"{self._('download_failed')}: {str(e)}")
-    
+             # 显示成功消息并返回主页
+            QMessageBox.information(self, self._("download_success", title=novel_title), 
+                                   self._("download_success", title=novel_title))
+            self.switch_tab(0)
+
     def download_series(self, series_id):
         """下载整个系列"""
         try:
@@ -970,26 +977,6 @@ class PixivNovelDownloader(QMainWindow):
             self.progress_info.setText(self._("series_completed", title=series_title, success=success_count, total=total))
             self.save_download_history(f"系列: {series_title}")
             
-            # 如果设置了下载后打开文件夹（只在全部下载完成后打开）
-            if self.open_after_download:
-                try:
-                    # 打开系列目录
-                    if sys.platform == "win32":
-                        os.startfile(series_dir)
-                    elif sys.platform == "darwin":
-                        subprocess.Popen(["open", series_dir])
-                    else:
-                        subprocess.Popen(["xdg-open", series_dir])
-                    logging.info(f"已打开文件夹: {series_dir}")
-                except Exception as e:
-                    logging.error(f"打开文件夹失败: {str(e)}")
-            
-            # 显示成功消息并返回主页
-            QMessageBox.information(self, self._("series_success", title=series_title, success=success_count, total=total), 
-                                   self._("series_success", title=series_title, success=success_count, total=total))
-            self.switch_tab(0)
-            logging.info(f"系列下载完成! 成功: {success_count}/{total}")
-            
         except Exception as e:
             error_msg = f"{self._('download_failed')}: {str(e)}"
             logging.error(error_msg, exc_info=True)
@@ -1135,10 +1122,11 @@ class PixivNovelDownloader(QMainWindow):
                     logging.info(f"下载项目 {i+1}/{total}: 类型 '{content_type}', ID '{content_id}'")
                     
                     if content_type == "novel":
+                        # 下载单本小说时不打开文件夹
                         self.download_single_novel(content_id)
                         success_count += 1
                     elif content_type == "series":
-                        # 下载整个系列
+                        # 下载整个系列时不打开文件夹
                         self.download_series(content_id)
                         success_count += 1
                     
@@ -1155,7 +1143,6 @@ class PixivNovelDownloader(QMainWindow):
             self.progress.setValue(100)
             self.progress_label.setText(self._("status_completed"))
             self.progress_info.setText(self._("batch_success", success=success_count, total=total))
-            
             # 显示成功消息并返回主页
             QMessageBox.information(self, self._("batch_success", success=success_count, total=total), 
                                    self._("batch_success", success=success_count, total=total))
@@ -1389,6 +1376,9 @@ class SettingsDialog(QDialog):
             logging.info(f"选择保存路径: {folder}")
 
 if __name__ == "__main__":
+    restart_count = 0
+    max_restart_attempts = 3  # 最大重启尝试次数
+    
     while True:
         app = QApplication(sys.argv)
         app.setStyle("Fusion")
@@ -1431,6 +1421,55 @@ if __name__ == "__main__":
             window.setWindowIcon(QIcon("icon.ico"))
         window.show()
         exit_code = app.exec()
-        if exit_code != 201:  # 非重启退出码
+        
+        # 检查是否需要重启
+        if exit_code == 201:  # 重启退出码
+            restart_count += 1
+            logging.info(f"尝试重启程序 (尝试次数: {restart_count}/{max_restart_attempts})")
+            
+            if restart_count > max_restart_attempts:
+                logging.error("达到最大重启尝试次数，退出程序")
+                break
+                
+            # 在打包环境中，使用可执行文件路径
+            if getattr(sys, 'frozen', False):
+                # 在打包环境中
+                executable_path = sys.executable
+                logging.info(f"打包环境重启: {executable_path}")
+                
+                try:
+                    # 对于Windows系统
+                    if sys.platform == "win32":
+                        # 使用绝对路径启动新进程
+                        subprocess.Popen([executable_path])
+                        sys.exit(0)
+                    
+                    # 对于macOS系统
+                    elif sys.platform == "darwin":
+                        # macOS可能需要指定.app包路径
+                        if executable_path.endswith('.app'):
+                            # 如果是在.app包中
+                            app_path = os.path.dirname(executable_path)
+                            subprocess.Popen(['open', app_path])
+                        else:
+                            subprocess.Popen([executable_path])
+                        sys.exit(0)
+                    
+                    # 对于Linux系统
+                    else:
+                        subprocess.Popen([executable_path])
+                        sys.exit(0)
+                except Exception as e:
+                    logging.error(f"重启失败: {str(e)}")
+                    break
+            else:
+                # 在开发环境中
+                logging.info("开发环境重启")
+                try:
+                    os.execv(sys.executable, [sys.executable] + sys.argv)
+                except Exception as e:
+                    logging.error(f"重启失败: {str(e)}")
+                    break
+        else:
+            # 正常退出
             break
-        os.execv(sys.executable, [sys.executable] + sys.argv)

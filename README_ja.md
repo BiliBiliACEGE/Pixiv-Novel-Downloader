@@ -32,13 +32,15 @@ python main.py
 
 ## スクリーンショット
 
-![ホーム](https://github.com/user-attachments/assets/aebb64fc-5f45-41a4-840f-18fcce7287f4)
+![ホーム](https://github.com/user-attachments/assets/809e0659-cd85-4bed-a09c-9ca1561422a5)
 
-![一括ダウンロード](https://github.com/user-attachments/assets/5e514c6c-d79f-4b91-b312-e89abf5a5c20)
+![一括ダウンロード](https://github.com/user-attachments/assets/8a4da86d-fe6f-491b-9473-5895b5fb56fb)
 
-![進捗](https://github.com/user-attachments/assets/fe8fbc1e-3d06-482d-84aa-78a00486a5e2)
+![進捗](https://github.com/user-attachments/assets/0847b485-ac4d-4af7-87ec-d5671946090c)
 
-![履歴](https://github.com/user-attachments/assets/57ed96a6-5891-49a3-ba9b-6b0b14b178dc)
+![履歴](https://github.com/user-attachments/assets/d1620a5d-4205-4bac-bbfd-c25a42d8937b)
+
+![設定](https://github.com/user-attachments/assets/454bea2e-0def-470c-bf04-d6f1f0adf96d)
 
 ## ライセンス
 

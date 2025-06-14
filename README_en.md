@@ -32,13 +32,15 @@ python main.py
 
 ## Screenshots
 
-![Home](https://github.com/user-attachments/assets/aebb64fc-5f45-41a4-840f-18fcce7287f4)
+![home](https://github.com/user-attachments/assets/6c0cb5c3-24de-4666-bdf0-c175b5de247f)
 
-![Batch Download](https://github.com/user-attachments/assets/5e514c6c-d79f-4b91-b312-e89abf5a5c20)
+![Batch Download](https://github.com/user-attachments/assets/8c7e80d7-ae96-4e16-9922-10514665b0e6)
 
-![Progress](https://github.com/user-attachments/assets/fe8fbc1e-3d06-482d-84aa-78a00486a5e2)
+![Progress](https://github.com/user-attachments/assets/0cb0910c-29b8-421a-870c-1f524afd5612)
 
-![History](https://github.com/user-attachments/assets/57ed96a6-5891-49a3-ba9b-6b0b14b178dc)
+![History](https://github.com/user-attachments/assets/28b3e6d8-74c5-4520-b5d1-4b45a72175bd)
+
+![Settings](https://github.com/user-attachments/assets/037e56ca-adf8-41c2-ae20-ad8cd7df1d15)
 
 ## License
 
