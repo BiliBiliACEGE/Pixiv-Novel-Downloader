@@ -599,10 +599,17 @@ class PixivNovelDownloader(QMainWindow):
         error_msg = self._("extract_error", input=input_text)
         logging.warning(error_msg)
         raise ValueError(error_msg)
+            
+    def open_after_download(self):
+      # 根据下载模式决定是否立即打开
+      if self.is_batch_download or self.is_series_download:
+        self.open_after_download=True
+      else:
+        self.open_after_download=False
 
     def open_folder(self,file_path,open_folder=True):
        # 如果设置了下载后打开文件夹 且 open_folder=True
-            if self.open_after_download and open_folder:
+            if open_folder:
                 try:
                     # 打开文件所在目录
                     if sys.platform == "win32":
@@ -615,12 +622,8 @@ class PixivNovelDownloader(QMainWindow):
                 except Exception as e:
                     logging.error(f"打开文件夹失败: {str(e)}")
             else:
-                # 仅打印路径
-                logging.info(f"下载完成: 路径 '{file_path}'")
-            #如果是批量下载或系列下载就等待全部完成后打开
-            if self.batch_download or self.download_series:
-                self.open_after_download=True
-
+                logging.info("用户选择不自动打开文件夹")
+            
     def download_novel(self, novel_id=None):
         """下载单本小说或系列"""
         try:
@@ -941,6 +944,7 @@ class PixivNovelDownloader(QMainWindow):
             total = len(novel_ids)
             self.progress_label.setText(self._("series_progress", title=series_title))
             self.progress.setValue(0)
+            self.is_series_download=True
             
             success_count = 0
             for i, novel_id in enumerate(novel_ids):
@@ -960,6 +964,7 @@ class PixivNovelDownloader(QMainWindow):
                     self.download_single_novel(novel_id)
                     success_count += 1
                     logging.info(f"小说 {novel_id} 下载成功")
+                    self.is_series_download=False
                 except Exception as e:
                     error_msg = f"小说 {novel_id} 下载失败: {str(e)}"
                     logging.error(error_msg, exc_info=True)
@@ -1104,6 +1109,7 @@ class PixivNovelDownloader(QMainWindow):
             total = len(content_ids)
             self.progress_label.setText(self._("status_downloading"))
             self.progress.setValue(0)
+            self.is_batch_download=True
             
             success_count = 0
             for i, (content_type, content_id) in enumerate(content_ids):
@@ -1125,11 +1131,11 @@ class PixivNovelDownloader(QMainWindow):
                         # 下载单本小说时不打开文件夹
                         self.download_single_novel(content_id)
                         success_count += 1
+                        self.is_series_download=False
                     elif content_type == "series":
                         # 下载整个系列时不打开文件夹
                         self.download_series(content_id)
                         success_count += 1
-                    
                     logging.info(f"项目 {i+1}/{total} 下载成功")
                 except Exception as e:
                     error_msg = f"内容 {content_id} 下载失败: {str(e)}"
@@ -1147,6 +1153,7 @@ class PixivNovelDownloader(QMainWindow):
             QMessageBox.information(self, self._("batch_success", success=success_count, total=total), 
                                    self._("batch_success", success=success_count, total=total))
             self.switch_tab(0)
+            self.is_batch_download=False
             logging.info(f"批量下载完成! 成功: {success_count}/{total}")
             
         except Exception as e:
