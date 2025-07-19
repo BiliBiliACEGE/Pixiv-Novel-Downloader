@@ -1,7 +1,8 @@
 [English](README_en.md) | [日本語](README_ja.md)
 # Pixiv小说下载器
 
-一个基于PyQt6的图形界面工具，用于从Pixiv下载小说内容。
+一个基于PyQt6的图形界面工具，用于从Pixiv下载小说内容。    
+安卓版本：https://github.com/BiliBiliACEGE/Pixiv-Novel-Downloader-Android
 
 ## 功能特性
 
