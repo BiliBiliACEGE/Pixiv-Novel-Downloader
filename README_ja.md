@@ -1,7 +1,8 @@
 [中文](README.md) | [English](README_en.md)
 # Pixiv小説ダウンローダー
 
-PyQt6ベースのGUIツールで、Pixivから小説をダウンロードします。
+PyQt6ベースのGUIツールで、Pixivから小説をダウンロードします。   
+Androidバージョン: https://github.com/BiliBiliACEGE/Pixiv-Novel-Downloader-Android
 
 ## 機能
 
