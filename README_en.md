@@ -1,7 +1,8 @@
 [中文](README.md) | [日本語](README_ja.md)
 # Pixiv Novel Downloader
 
-A GUI tool based on PyQt6 for downloading novels from Pixiv.
+A GUI tool based on PyQt6 for downloading novels from Pixiv.   
+Android version: https://github.com/BiliBiliACEGE/Pixiv-Novel-Downloader-Android
 
 ## Features
 
